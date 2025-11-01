@@ -45,7 +45,7 @@ def test_codium(runner, temporary_directory):
         ],
     )
     out = result.stdout
-    assert f"Group name: n_snips" in out
+    assert "Group name: n_snips" in out
     assert (
         "n_snips.code-snippets" in out
     ), "Unknown folder to language key should result in global snippet filename"

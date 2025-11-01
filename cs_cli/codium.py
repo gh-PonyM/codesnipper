@@ -16,6 +16,6 @@ def config_dir(
             config_base = maybe_dir
 
     if not config_base:
-        on_fail(f"vscodium/vscode not installed.")
+        on_fail("vscodium/vscode not installed.")
         return
     return config_base
