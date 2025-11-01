@@ -69,7 +69,8 @@ class VSCodeSnippets(BaseModel):
 
     def __add__(self, other):
         d = self.__root__.copy()
-        return VSCodeSnippets(__root__=d.update(other.__root__))
+        d.update(other.__root__)
+        return VSCodeSnippets(__root__=d)
 
 
 class VSCodeOut(BaseModel):

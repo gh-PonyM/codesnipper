@@ -28,7 +28,7 @@ Or if you want to install it with user scope:
 
 **Install shell completion**
 
-You can get autocomplete for your snipppets folders (`-f` flag), which can be handy
+You can get autocomplete for your snippets folders (`-f` flag), which can be handy
 
     cs-cli --install-completion
 
@@ -218,7 +218,7 @@ $ tree .
 
 ### .bashrc entry
 
-Why not use an alias to facilite the work further:
+Why not use an alias to facility the work further:
 
 ```shell
 export CODE_SNIPPETS_PATH=$HOME/myrepos/code-snippets
