@@ -36,7 +36,6 @@ def test_extmark_conversion(in_, expected):
     assert expected == transform_pycharm_to_extmark(in_)
     assert in_ == transform_extmark_to_pycharm(expected)
 
-
 @pytest.mark.parametrize(
     "content,vars",
     (
