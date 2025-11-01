@@ -1,7 +1,7 @@
 [project]
 name = "codesnipper"
 version = "0.1.0"
-description = "Add your description here"
+description = "Command line tool to install code snippets in different editors"
 readme = "README.md"
 authors = [
     { name = "PonyM", email = "dev@lksch.ch" }
