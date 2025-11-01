@@ -17,7 +17,7 @@ you can install for each editor and keep them in sync. Furthermore, there are ot
 
 ## Installation
 
-I would recommend to use [pipx](https://pypa.github.io/pipx/) to install the tool globally in a separate environement:
+I would recommend to use [pipx](https://pypa.github.io/pipx/) to install the tool globally in a separate environment:
 
     pipx install git+https://github.com/DadaDaMotha/codesnipper.git#main
     pipx install git+ssh://github.com/DadaDaMotha/codesnipper.git#main

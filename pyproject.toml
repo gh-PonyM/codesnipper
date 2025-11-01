@@ -1,5 +1,5 @@
 [project]
-name = "codesnipper"
+name = "cs-cli"
 version = "0.1.0"
 description = "Command line tool to install code snippets in different editors"
 readme = "README.md"
