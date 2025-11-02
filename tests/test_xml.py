@@ -36,6 +36,7 @@ def test_extmark_conversion(in_, expected):
     assert expected == transform_pycharm_to_extmark(in_)
     assert in_ == transform_extmark_to_pycharm(expected)
 
+
 @pytest.mark.parametrize(
     "content,vars",
     (
@@ -60,9 +61,9 @@ def test_variables_charm(content, vars):
 
     template = CharmTemplate(name="testsnippet", value=content)
     if vars:
-        assert (
-            template.variables
-        ), "The variables should be extract from the content if not set"
+        assert template.variables, (
+            "The variables should be extract from the content if not set"
+        )
         assert sorted(vars) == [v.name for v in template.variables]
         print(list(template.variables)[0].xml())
         xml = template.xml()
@@ -76,6 +77,6 @@ def test_variables_charm(content, vars):
 
     if "${1" in content:
         print(template.value)
-        assert (
-            f"${vars[0]}$" in template.value
-        ), "The value must be adapted to fit the pycharm format"
+        assert f"${vars[0]}$" in template.value, (
+            "The value must be adapted to fit the pycharm format"
+        )

@@ -12,7 +12,7 @@ from rich import print
 
 from cs_cli.charm import config_dir as pycharm_config_dir
 from cs_cli.charm_models import CharmTemplate, TemplateContext, TemplateSet
-from cs_cli.codium import config_dir as codium_config_dir
+from cs_cli.codium import config_dirs as codium_config_dir
 from cs_cli.codium_models import (
     DefaultLangID,
     MergeStrategy,
@@ -159,7 +159,9 @@ def charm_handle_file(snippet_name: str, content: str, file: Path):
 
 @app.command()
 def config_schema(
-    strict: bool = typer.Option(True, help="Show strict schema for VSCode language ids")
+    strict: bool = typer.Option(
+        True, help="Show strict schema for VSCode language ids"
+    ),
 ):
     """Prints the jsonschema for `cs-confg.json`."""
     cls = StrictSnippetsConfig if strict else SnippetsConfig
@@ -268,9 +270,9 @@ def vscode(
     """Install snippets for VSCode/VSCodium."""
     if schema_json:
         schema_info(VSCodeSnippets)
-    cfg_dir = out_dir or codium_config_dir(on_fail=on_fail)
-
-    snippets_dir = ensure_templates_dir(cfg_dir, "snippets", out_dir)
+    cfg_dirs = (out_dir,) if out_dir else tuple(codium_config_dir())
+    if not cfg_dirs:
+        on_fail("vscodium/vscode not installed.")
 
     lang_ids = set(e.value for e in DefaultLangID)
 
@@ -303,21 +305,23 @@ def vscode(
         register_for_file(folder, snippets)
         return snippets, snippets.json(indent=2)
 
-    generate(
-        folders=folders,
-        rm_imports=rm_imports,
-        templates_dir=snippets_dir,
-        exclude_rgx=exclude_rgx,
-        dry_run=dry_run,
-        file_to_model=vscode_handle_file,
-        models_callback=models_callback,
-        print_on_dry_run=False,
-    )
-    final_model = VSCodeOut.parse_obj(model_registry)
-    if dry_run:
-        typer.echo(VSCodeOut.__doc__)
-        typer.echo(final_model.json(indent=2))
-    else:
-        final_model.write_files(
-            snippets_dir, overwrite=strategy == MergeStrategy.OVERWRITE
+    for ide_config_dir in cfg_dirs:
+        snippets_dir = ensure_templates_dir(ide_config_dir, "snippets", out_dir)
+        generate(
+            folders=folders,
+            rm_imports=rm_imports,
+            templates_dir=snippets_dir,
+            exclude_rgx=exclude_rgx,
+            dry_run=dry_run,
+            file_to_model=vscode_handle_file,
+            models_callback=models_callback,
+            print_on_dry_run=False,
         )
+        final_model = VSCodeOut.parse_obj(model_registry)
+        if dry_run:
+            typer.echo(VSCodeOut.__doc__)
+            typer.echo(final_model.json(indent=2))
+        else:
+            final_model.write_files(
+                snippets_dir, overwrite=strategy == MergeStrategy.OVERWRITE
+            )
