@@ -11,7 +11,12 @@ from pydantic import BaseModel
 from rich import print
 
 from cs_cli.charm import config_dir as pycharm_config_dir
-from cs_cli.charm_models import CharmTemplate, TemplateContext, TemplateSet
+from cs_cli.charm_models import (
+    CharmTemplate,
+    TemplateContext,
+    TemplateSet,
+    transform_pycharm_to_extmark,
+)
 from cs_cli.codium import config_dirs as codium_config_dir
 from cs_cli.codium_models import (
     DefaultLangID,
@@ -44,14 +49,14 @@ def on_fail(msg: StringOrPath):
 
 
 def file_info(f: Path):
-    print(f"[bold]File: [magenta]{f.parts[-1]}")
+    print(f"[bold]File: [magenta]{f.name}")
 
 
 def auto_complete_snippets(ctx: typer.Context, search: str):
     """Autocompletion function for shell completion"""
     selected = ctx.params.get("folders") or []
     for f in snippet_folders(snippets_root()):
-        name = f.parts[-1]
+        name = f.name
         if search in name and name not in selected:
             yield name
 
@@ -81,7 +86,7 @@ def handle_file(
     f: Path,
     line_transforms: t.Dict[str | None, t.Sequence[TransformT]],
 ) -> tuple[str, str, Path]:
-    fn = f.parts[-1]
+    fn = f.name
     ending = file_ending(fn)
     content = f.read_text()
     transformers = line_transforms[ending]
@@ -128,7 +133,7 @@ def generate(
         for file in folder.iterdir():
             if file.is_dir():
                 continue
-            fn = file.parts[-1]
+            fn = file.name
             if exclude_rgx and re.search(re.escape(exclude_rgx), fn):
                 continue
             if fn.startswith("."):
@@ -136,7 +141,7 @@ def generate(
             yield file_to_model(*handle_file(file, line_transforms=transform_by_ending))
 
     for folder in folders:
-        fn = folder.parts[-1]
+        fn = folder.name
         print(f"---- Group name: {fn}")
         models = (te for te in _file_to_model(folder) if te)
         final_model, string_repr = models_callback(models, folder)
@@ -206,13 +211,13 @@ def pycharm(
 
     def models_callback(models, folder: Path):
         template_set = TemplateSet(
-            group=group_prefix + folder.parts[-1], templates=list(models)
+            group=group_prefix + folder.name, templates=list(models)
         )
         xml_repr = template_set.xml()
         return template_set, xml_repr
 
     def get_fn(folder: Path):
-        return f"{group_prefix}{folder.parts[-1]}.xml"
+        return f"{group_prefix}{folder.name}.xml"
 
     def write_template(target: Path, model, string_repr):
         target.write_text(string_repr)
@@ -234,8 +239,8 @@ def pycharm(
 def vscode_handle_file(snippet_name: str, content: str, file: Path):
     return VSCodeSnippet(
         prefix=[snippet_name],
-        body=content.splitlines(),
-        description=f"from {file.parent.parts[-1]}/{snippet_name}",
+        body=transform_pycharm_to_extmark(content).splitlines(),
+        description=f"from {file.parent.name}/{snippet_name}",
     )
 
 
@@ -281,7 +286,7 @@ def vscode(
     def register_for_file(folder, models: VSCodeSnippets):
         sn_cfg = snippets_config(folder)
         lang_ids_ = sn_cfg.vscode_lang_ids
-        folder_name = folder.parts[-1]
+        folder_name = folder.name
 
         if not lang_ids_:
             if folder_name in lang_ids:
@@ -299,7 +304,7 @@ def vscode(
                 model_registry[fn] = models
 
     def models_callback(models: t.Sequence[VSCodeSnippet], folder: Path):
-        folder_name = folder.parts[-1]
+        folder_name = folder.name
         data = {f"{folder_name}-{m.prefix[0]}": m for m in models}
         snippets = VSCodeSnippets.parse_obj(data)
         register_for_file(folder, snippets)

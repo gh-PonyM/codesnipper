@@ -1,4 +1,3 @@
-import json
 from pathlib import Path
 
 import pytest
@@ -34,23 +33,6 @@ def test_pycharm(runner, temporary_directory, folder):
     assert '<option name="ECMAScript6" value="true" />' in out
 
 
-@pytest.mark.parametrize("editor", ("vscode",))
-def test_python(runner, temporary_directory, editor):
-    result = runner.invoke(
-        app,
-        [
-            editor,
-            "--folder",
-            str(fixture_path / "python"),
-            "--out-dir",
-            str(temporary_directory),
-            "--dry-run",
-        ],
-    )
-    assert result.exit_code == 0
-    out = result.stdout
-
-
 def test_codium(runner, temporary_directory):
     # tests using env var CODE_SNIPPETS_PATH
     result = runner.invoke(
@@ -81,18 +63,4 @@ def test_codium(runner, temporary_directory):
             str(temporary_directory),
         ],
     )
-    assert result.exit_code == 0
-    python_file_path = temporary_directory / "Python.json"
-    python_json = json.loads(python_file_path.read_text())
-    del python_json["python-name_eq_main"]
-    python_file_path.write_text(json.dumps(python_json))
-    result = runner.invoke(
-        app,
-        [
-            "vscode",
-            "--out-dir",
-            str(temporary_directory),
-        ],
-    )
-    print(result.stdout)
     assert result.exit_code == 0

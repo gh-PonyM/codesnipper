@@ -26,7 +26,7 @@ def test_extmark_rgx(text):
     ),
 )
 def test_extmark_conversion(in_, expected):
-    """Test conversion from pycharm format to vscode format and vice version. Also test the ordering and enumeration of
+    """Test conversion from pycharm format to vscode format and vice versa. Also tests the ordering and enumeration of
     replacements.
 
     References:

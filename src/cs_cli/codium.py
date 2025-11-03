@@ -1,4 +1,3 @@
-
 from cs_cli.utils import application_dir
 
 codium_config_base = application_dir("VSCodium") / "User"

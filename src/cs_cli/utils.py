@@ -14,7 +14,7 @@ def snippet_folders(root: Path):
     for f in root.iterdir():
         if f.is_file():
             continue
-        ending = f.parts[-1]
+        ending = f.name
         if ending.startswith(".") or ending in exclude:
             continue
         yield f
