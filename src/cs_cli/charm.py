@@ -1,6 +1,8 @@
 import typing as t
 from pathlib import Path
 
+import typer
+
 from cs_cli.types import StringOrPath
 from cs_cli.utils import application_dir
 
@@ -30,4 +32,7 @@ def config_dir(
             return
         return folder
     installed = "\n".join(str(i) for i in f)
-    on_fail(f"There are multiple pycharm directories: \n{installed}")
+    newest = sorted(f, key=lambda f: f.name, reverse=True)[0]
+    typer.secho(f"There are multiple pycharm directories: \n{installed}", err=True)
+    typer.secho(f"Taking newest: {newest.name}")
+    return newest
